@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiches de renseignements Eleve</title>
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+</head>
+
+<body>
+  <main id="vueapp" class="container">
+    <article>
+      <h1>Liste des matières</h1>
+      <div v-for="ns, index in niveaux_sections">
+        <h3>Niveau : {{ns[0]}}<sup>{{(ns[0] == 1) ? 'ère' : 'ème'}}</sup> {{ns[1]}}</h3>
+
+        <div>
+          <div v-for="ms in matieres_sections[index]" class="row">
+            <div class="col-10">
+              <span class="badge" v-bind:class="{'bg-danger': ms.categorie == 'PR'}">{{ms.categorie}}</span>
+              <a href="#" v-on:click.prevent="selectMatiereSection(ms)">{{ms.matiere}}</a>
+            </div>
+            <div class="col-2">{{ms.coef.toFixed(1)}}</div>
+          </div>
+        </div>
+
+        <div class="my-2">
+          <button class="btn btn-success">⊞ Nouveau</button>
+        </div>
+      </div>
+
+      <form>
+        <div class="mb-1 row">
+          <div class="col-4">
+            <label for="inpNiveau" class="form-label">Niveau</label>
+            <input type="number" min="1" max="4" id="inpNiveau" class="form-control" v-model.number="selectedMatiereSection.niveau">
+          </div>
+
+          <div class="col-8">
+            <label for="inpSection" class="form-label">Section</label>
+            <select id="inpSection" class="form-select form-select-md" v-model="selectedMatiereSection.id_section">
+              <option selected>-</option>
+              <option v-for="section in sections" v-bind:value="section.id">{{section.section}}
+                ({{section.section_court}})</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-1 row">
+          <div class="col-8">
+            <label for="inpMatiere" class="form-label">Matiere</label>
+            <select id="inpMatiere" class="form-select form-select-md" v-model="selectedMatiereSection.id_matiere">
+              <option selected>-</option>
+              <option v-for="matiere in matieres" v-bind:value="matiere.id">{{matiere.matiere}}</option>
+            </select>
+          </div>
+          <div class="col-4">
+            <label for="inpCoef" class="form-label">Coefficient</label>
+            <input type="number" min="0.1" max="4.0" step="0.1" id="inpCoef" class="form-control" v-model.number="selectedMatiereSection.coef">
+          </div>
+        </div>
+
+        <div class="mb-1">
+          <input type="radio" id="inpCategoriePrinipale" name="categorie" value="PR" v-model="selectedMatiereSection.categorie">
+          <label for="inpCategoriePrinipale" class="form-label">Principale</label>
+
+          <input type="radio" id="inpCategorieObligatoire" name="categorie" value="OB" v-model="selectedMatiereSection.categorie">
+          <label for="inpCategorieObligatoire" class="form-label">Obligatoire</label>
+
+          <input type="radio" id="inpCategorieOption" name="categorie" value="OP" v-model="selectedMatiereSection.categorie">
+          <label for="inpCategorieOption" class="form-label">Option</label>
+        </div>
+
+        <div class="mb-1">
+          <button></button>
+        </div>
+      </form>
+    </article>
+
+    <article>
+      <h1>Fiche de renseignements</h1>
+
+      <form>
+        <div class="mb-1">
+          <label for="inpClasse" class="form-label">Classe</label>
+          <select id="inpClasse" class="form-select form-select-sm" aria-label=".form-select-sm example">
+            <option selected>-</option>
+            <option v-for="classe in classes" v-bind:value="classe.id_classe">{{classe.classe}} ({{classe.niveau}}
+              {{classe.section}})</option>
+          </select>
+        </div>
+
+        <div class="mb-1">
+          <label for="inpNomPrenom" class="form-label">Nom & Prénom</label>
+          <input type="text" class="form-control" id="inpNomPrenom" placeholder="Nom & Prénom" required>
+        </div>
+
+        <div class="mb-1">
+          <input type="radio" id="inpGenreGarcon" name="genre" value="G">
+          <label for="inpGenreGarcon" class="form-label">Garçon</label>
+
+          <input type="radio" id="inpGenreFille" name="genre" value="F">
+          <label for="inpGenreFille" class="form-label">Fille</label>
+        </div>
+
+        <div class="mb-1">
+          <label for="inpDateNaiss" class="form-label">Date de naissance</label>
+          <input type="date" class="form-control" id="inpDateNaiss" required>
+        </div>
+
+        <div class="mb-1">
+          <label for="inpEmail" class="form-label">Email</label>
+          <input type="text" class="form-control" id="inpEmail" placeholder="Email">
+        </div>
+
+        <div class="mb-1">
+          <label for="inpPasseTemps" class="form-label">Passe-temps favoris</label>
+          <textarea class="form-control" id="inpPasseTemps" placeholder="Vos passe-temps"></textarea>
+        </div>
+
+        <div class="mb-1">
+
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </article>
+
+  </main>
+  <script src="assets/js/bootstrap.bundle.js"></script>
+  <script src="assets/js/vue.js"></script>
+  <script src="assets/app/app.js"></script>
+</body>
+
+</html>

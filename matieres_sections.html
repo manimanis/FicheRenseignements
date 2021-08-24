@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiches de renseignements Eleve</title>
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+</head>
+
+<body>
+  <main id="vueapp" class="container">
+    <article>
+      <h2>Liste des matières</h2>
+      <div v-for="ns, idxNS in mat_sect.niv_sec">
+        <h3>Niveau : {{ns}}</h3>
+
+        <div>
+          <div v-for="ms, idxMS in mat_sect.mat_sec[idxNS]" class="row">
+            <div class="col-10">
+              <span class="badge" v-bind:class="{'bg-danger': ms.categorie == 'PR', 'bg-success': ms.categorie == 'OB', 'bg-secondary': ms.categorie == 'OP'}">{{ms.categorie}}</span>
+              <a href="#" v-on:click.prevent="onSelectItem(idxNS, idxMS)">{{ms.matiere}}</a>
+            </div>
+            <div class="col-2">{{ms.coef.toFixed(1)}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="my-2">
+        <button class="btn btn-success" v-on:click="onNewItem()">⊞ Nouveau</button>
+      </div>
+    </article>
+
+    <article v-if="mode == 'edit' || mode == 'new'">
+      <h2>{{(mode == 'edit') ? 'Modification' : 'Nouvelle'}} Matière</h2>
+      <div v-if="errors.length > 0" class="text-danger my-2">
+        <h3>Erreurs</h3>
+        <ul>
+          <li v-for="error in errors">{{error}}</li>
+        </ul>
+      </div>      
+      <form>
+        <div class="mb-1 row">
+          <div class="col-4">
+            <label for="inpNiveau" class="form-label">Niveau</label>
+            <input type="number" min="1" max="4" id="inpNiveau" class="form-control"
+              v-model.number="selectedItem.niveau">
+          </div>
+
+          <div class="col-8">
+            <label for="inpSection" class="form-label">Section</label>
+            <select id="inpSection" class="form-select form-select-md" v-model="selectedItem.id_section">
+              <option selected>-</option>
+              <option v-for="section in sections" v-bind:value="section.id">{{section.section}}
+                ({{section.section_court}})</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-1 row">
+          <div class="col-8">
+            <label for="inpMatiere" class="form-label">Matiere</label>
+            <select id="inpMatiere" class="form-select form-select-md" v-model="selectedItem.id_matiere">
+              <option selected>-</option>
+              <option v-for="matiere in matieres" v-bind:value="matiere.id">{{matiere.matiere}}</option>
+            </select>
+          </div>
+          <div class="col-4">
+            <label for="inpCoef" class="form-label">Coefficient</label>
+            <input type="number" min="0.25" max="4.0" step="0.25" id="inpCoef" class="form-control"
+              v-model.number="selectedItem.coef">
+          </div>
+        </div>
+
+        <div class="mb-1">
+          <input type="radio" id="inpCategoriePrinipale" name="categorie" value="PR" v-model="selectedItem.categorie">
+          <label for="inpCategoriePrinipale" class="form-label">Principale</label>
+
+          <input type="radio" id="inpCategorieObligatoire" name="categorie" value="OB" v-model="selectedItem.categorie">
+          <label for="inpCategorieObligatoire" class="form-label">Obligatoire</label>
+
+          <input type="radio" id="inpCategorieOption" name="categorie" value="OP" v-model="selectedItem.categorie">
+          <label for="inpCategorieOption" class="form-label">Option</label>
+        </div>
+
+        <div class="mb-1">
+          <button v-on:click.prevent="onSaveClicked()" class="btn btn-primary">Enregistrer</button>
+          <button v-on:click.prevent="onCancelClicked()" class="btn btn-secondary">Annuler</button>
+        </div>
+      </form>
+    </article>
+  </main>
+  <script src="assets/js/bootstrap.bundle.js"></script>
+  <script src="assets/js/vue.js"></script>
+  <script src="assets/app/entities.js"></script>
+  <script src="assets/app/mat_sect.js"></script>
+</body>
+
+</html>
