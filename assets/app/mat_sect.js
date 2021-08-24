@@ -8,6 +8,8 @@ const app = new Vue({
     mat_sect: new MatiereSectionCollection(),
     selectedItem: {},
     selectedItemIndex: {},
+    selectedNiveauIndex: 0,
+    selectedMatiereIndex: 0,
     mode: 'list'
   },
   mounted: function () {
@@ -15,6 +17,34 @@ const app = new Vue({
     this.fetchMatieresSections();
   },
   methods: {
+    /**
+     * Retourne la classe CSS pour le badge d'une matière
+     * 
+     * @param {MatiereSection} ms 
+     */
+    getClassBadge: function (ms) {
+      return {
+        'bg-danger': ms.categorie == 'PR',
+        'bg-success': ms.categorie == 'OB',
+        'bg-secondary': ms.categorie == 'OP'
+      };
+    },
+    /**
+     * Retourne l'objet MatiereSection qui a été sélectionné
+     * 
+     * @returns MatiereSection
+     */
+    getMatiere: function (idxNS, idxMS) {
+      return this.mat_sect.mat_sec[idxNS][idxMS];
+    },
+    /**
+     * Retourne l'objet Section qui a été sélectionné
+     * 
+     * @returns Section
+     */
+    getNiveau: function (idxNS) {
+      return this.mat_sect.niv_sec[idxNS];
+    },
     fetchClasses: function () {
       return fetch('operations.php?cnt=classes')
         .then(response => response.json())
@@ -29,7 +59,7 @@ const app = new Vue({
      * 
      * @param {json} data Le résultat d'un fetch
      */
-    handleFetch: function(data) {
+    handleFetch: function (data) {
       if (data.status != 'ok') {
         throw data.errors;
       }
@@ -39,7 +69,7 @@ const app = new Vue({
      * 
      * @param {String[]} errors 
      */
-    handleErrors: function(errors) {
+    handleErrors: function (errors) {
       this.errors = errors;
     },
     /**
@@ -84,8 +114,8 @@ const app = new Vue({
      * Mettre à jour une matière dans la base de données
      */
     updateMatiereSection: function () {
-      const idxNS = this.selectedItemIndex.idxNS;
-      const idxMS = this.selectedItemIndex.idxMS;
+      const idxNS = this.selectedNiveauIndex;
+      const idxMS = this.selectedMatiereIndex;
       const oldItem = this.mat_sect.mat_sec[idxNS][idxMS];
       const newItem = this.selectedItem;
       this.mat_sect.update(idxNS, idxMS, newItem);
@@ -106,6 +136,15 @@ const app = new Vue({
           this.mat_sect.add(newItem);
           this.onCancelClicked();
         });
+    },
+    /**
+     * Supprimer une matière après confirmation
+     */
+    deleteMatiereSection: function() {
+      const idxNS = this.selectedNiveauIndex;
+      const idxMS = this.selectedMatiereIndex;
+      this.mat_sect.removeAt(idxNS, idxMS);
+      this.onCancelClicked();
     },
     /**
      * Prévient l'utilisateur d'effectuer une nouvelle opération d'ajout ou 
@@ -131,7 +170,9 @@ const app = new Vue({
         return;
       }
       this.mode = 'edit';
-      this.selectedItemIndex = { idxNS: idxNS, idxMS: idxMS };
+      this.selectedNiveauIndex = idxNS;
+      this.selectedMatiereIndex = idxMS;
+      // this.originalSelectedItem = new MatiereSection(this.mat_sect.mat_sec[idxNS][idxMS]);
       this.selectedItem = new MatiereSection(this.mat_sect.mat_sec[idxNS][idxMS]);
     },
     /**
@@ -142,8 +183,24 @@ const app = new Vue({
         return;
       }
       this.mode = 'new';
-      this.selectedItemIndex = { idxNS: -1, idxMS: -1 };
+      this.selectedNiveauIndex = -1;
+      this.selectedMatiereIndex = -1;
       this.selectedItem = new MatiereSection();
+    },
+    /**
+     * Supprimer l'élément indiqué
+     * @param {number} idxNS 
+     * @param {number} idxMS 
+     */
+    onDeleteItem: function (idxNS, idxMS) {
+      if (this.preventSelection()) {
+        return;
+      }
+      this.mode = "delete";
+      this.selectedNiveauIndex = idxNS;
+      this.selectedMatiereIndex = idxMS;
+      // this.originalSelectedItem = new MatiereSection(this.mat_sect.mat_sec[idxNS][idxMS]);
+      this.selectedItem = this.mat_sect.mat_sec[idxNS][idxMS];
     },
     /**
      * Remplit certains champs non touchés dans le formulaire :
@@ -167,6 +224,8 @@ const app = new Vue({
         this.updateMatiereSection();
       } else if (this.mode == 'new') {
         this.insertMatiereSection();
+      } else if (this.mode == 'delete') {
+        this.deleteMatiereSection();
       }
     },
     /**
