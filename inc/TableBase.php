@@ -27,7 +27,6 @@ class TableBase extends DbBase
     protected function update_query(array $data, string $where)
     {
         $new_values = "";
-        $where = "";
         foreach ($data as $key => $value) {
             if (in_array($key, $this->_fields)) {
                 if ($new_values != "") {
@@ -64,6 +63,19 @@ class TableBase extends DbBase
         $sql = $this->update_query($data, $where);
         $st = $this->_conn->prepare($sql);
         return $st->execute(TableBase::prepare_data($data));
+    }
+
+    public function delete(array $data) {
+        try {
+            $where = $this->where_clause($this->_fields, $data);
+            $sql = "DELETE FROM {$this->_tablename} WHERE $where";
+            $st = $this->_conn->prepare($sql);
+            return $st->execute(TableBase::prepare_data($data));
+        }
+        catch (PDOException $e) {
+            $this->_errors->add($e->getMessage());
+            return false;
+        }
     }
 
     function query_by_id(array $data_id)

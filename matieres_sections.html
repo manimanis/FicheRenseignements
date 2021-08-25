@@ -12,10 +12,19 @@
 
 <body>
   <main id="vueapp" class="container">
+    <article v-if="alerts.length > 0">
+      <div class="my-2 alert d-flex align-items-center" v-bind:class="'alert-' + alert.alType" role="alert" v-for="alert in alerts">
+        <i class="fas fa-check me-2"></i>
+        <div>{{alert.alMsg}}</div>
+      </div>
+    </article>
+
     <article v-if="mode == 'list'">
       <h2>Liste des matières</h2>
       <div v-for="ns, idxNS in mat_sect.niv_sec">
-        <h3>Niveau : {{ns}}</h3>
+        <h3>Niveau : {{ns}} 
+          <a href="#" v-on:click.prevent="onNewItem(idxNS)"><i class="fas fa-plus-circle"></i></a>
+        </h3>
 
         <div class="row">
           <div v-for="ms, idxMS in mat_sect.mat_sec[idxNS]" class="col-sm-12 col-md-6 col-lg-4 row">
@@ -55,13 +64,6 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <div v-if="errors.length > 0" class="text-danger my-2">
-        <h3>Erreurs</h3>
-        <ul>
-          <li v-for="error in errors">{{error}}</li>
-        </ul>
       </div>
 
       <div class="my-2 card">

@@ -24,6 +24,14 @@ class MatiereSection {
     this.section = obj.section || "";
     this.section_court = obj.section_court || "";
   }
+
+  defaultValues() {
+    this.id_matiere = 0;
+    this.matiere = "";
+    this.categorie = "OB";
+    this.coef = 1.0;
+    return this;
+  }
 }
 
 class NiveauSection {

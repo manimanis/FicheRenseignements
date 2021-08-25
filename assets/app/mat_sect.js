@@ -1,7 +1,6 @@
 const app = new Vue({
   el: '#vueapp',
   data: {
-    errors: [],
     classes: [],
     matieres: [],
     sections: [],
@@ -10,6 +9,7 @@ const app = new Vue({
     selectedItemIndex: {},
     selectedNiveauIndex: 0,
     selectedMatiereIndex: 0,
+    alerts: [],
     mode: 'list'
   },
   mounted: function () {
@@ -45,6 +45,23 @@ const app = new Vue({
     getNiveau: function (idxNS) {
       return this.mat_sect.niv_sec[idxNS];
     },
+    /**
+     * Affiche un message d'alerte
+     * @param {string} type 
+     * @param {string} msg 
+     */
+    addAlertMessage: function(type, msg) {
+      const idx = this.alerts.length;
+      this.alerts.push({alType: type, alMsg: msg});
+      setTimeout(()=> this.clearAlertMessage(0), 5000);
+    },
+    /**
+     * Efface le message d'alerte d'indice indiqué
+     * @param {number} idx
+     */
+    clearAlertMessage: function (idx) {
+      this.alerts.splice(idx, 1);
+    },
     fetchClasses: function () {
       return fetch('operations.php?cnt=classes')
         .then(response => response.json())
@@ -70,7 +87,9 @@ const app = new Vue({
      * @param {String[]} errors 
      */
     handleErrors: function (errors) {
-      this.errors = errors;
+      for (let error of errors) {
+        this.addAlertMessage('danger', error);
+      }
     },
     /**
      * Télécharger toutes les données nécessaires pour la page
@@ -111,6 +130,41 @@ const app = new Vue({
         .catch(this.handleErrors);
     },
     /**
+     * Mettre à jour une MatiereSection
+     * @param {MatiereSection} oms Ancienne matière
+     * @param {MatiereSection} ms Nouvelle matière
+     */
+    updateMatiere: function (oms, ms) {
+      let formData = new URLSearchParams();
+      Object.entries(oms).forEach(arr => formData.append('o' + arr[0], arr[1]));
+      Object.entries(ms).forEach(arr => formData.append(arr[0], arr[1]));
+      return fetch('operations.php?cnt=classes&act=updateMatiere',
+        {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(this.handleFetch)
+        .catch(this.handleErrors);
+    },
+    /**
+     * 
+     * @param {MatiereSection} ms 
+     * @returns 
+     */
+    deleteMatiere: function (ms) {
+      let formData = new URLSearchParams();
+      Object.entries(ms).forEach(arr => formData.append(arr[0], arr[1]));
+      return fetch('operations.php?cnt=classes&act=deleteMatiere',
+        {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(this.handleFetch)
+        .catch(this.handleErrors);
+    },
+    /**
      * Mettre à jour une matière dans la base de données
      */
     updateMatiereSection: function () {
@@ -118,8 +172,15 @@ const app = new Vue({
       const idxMS = this.selectedMatiereIndex;
       const oldItem = this.mat_sect.mat_sec[idxNS][idxMS];
       const newItem = this.selectedItem;
-      this.mat_sect.update(idxNS, idxMS, newItem);
-      this.onCancelClicked();
+      this.updateMatiere(oldItem, newItem)
+        .then(data => {
+          if (data == null) {
+            return;
+          }
+          this.addAlertMessage('success', 'Modification effectuée avec succès!');
+          this.mat_sect.update(idxNS, idxMS, newItem);
+          this.onCancelClicked();
+        });
     },
     /**
      * Insérer une nouvelle matière dans la base de données
@@ -132,7 +193,7 @@ const app = new Vue({
           if (data == null) {
             return;
           }
-          console.log('Success: ', data);
+          this.addAlertMessage('success', 'Ajout effectué avec succès!');
           this.mat_sect.add(newItem);
           this.onCancelClicked();
         });
@@ -140,11 +201,19 @@ const app = new Vue({
     /**
      * Supprimer une matière après confirmation
      */
-    deleteMatiereSection: function() {
+    deleteMatiereSection: function () {
       const idxNS = this.selectedNiveauIndex;
       const idxMS = this.selectedMatiereIndex;
-      this.mat_sect.removeAt(idxNS, idxMS);
-      this.onCancelClicked();
+      const oldItem = this.mat_sect.mat_sec[idxNS][idxMS];
+      this.deleteMatiere(oldItem)
+        .then(data => {
+          if (data == null) {
+            return;
+          }
+          this.addAlertMessage('success', 'Suppression effectuée avec succès!');
+          this.mat_sect.removeAt(idxNS, idxMS);
+          this.onCancelClicked();
+        });
     },
     /**
      * Prévient l'utilisateur d'effectuer une nouvelle opération d'ajout ou 
@@ -178,14 +247,22 @@ const app = new Vue({
     /**
      * Création d'une nouvelle matière
      */
-    onNewItem: function () {
+    onNewItem: function (idxNS) {
       if (this.preventSelection()) {
         return;
       }
+      if (idxNS == null) {
+        idxNS = -1;
+      }
       this.mode = 'new';
-      this.selectedNiveauIndex = -1;
+      this.selectedNiveauIndex = idxNS;
       this.selectedMatiereIndex = -1;
-      this.selectedItem = new MatiereSection();
+      if (idxNS == -1) {
+        this.selectedItem = new MatiereSection();
+      } else {
+        this.selectedItem = new MatiereSection(this.mat_sect.mat_sec[idxNS][0]);
+        this.selectedItem.defaultValues();
+      }
     },
     /**
      * Supprimer l'élément indiqué
