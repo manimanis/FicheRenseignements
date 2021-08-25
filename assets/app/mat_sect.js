@@ -11,6 +11,7 @@ const app = new Vue({
     selectedNiveauIndex: 0,
     selectedMatiereIndex: 0,
     alerts: [],
+    dupItems: [],
     mode: 'list'
   },
   mounted: function () {
@@ -274,6 +275,18 @@ const app = new Vue({
       }
     },
     /**
+     * Dupliquer toutes les entrées d'un niveau
+     * @param {number} idxNS 
+     */
+    onDuplicateNiveau: function(idxNS) {
+      if (this.preventSelection()) {
+        return;
+      }
+      this.mode = 'duplicate';
+      this.dupItems = this.mat_sect.mat_sec[idxNS]
+        .map(ms => new MatiereSection(ms));
+    },
+    /**
      * Supprimer l'élément indiqué
      * @param {number} idxNS 
      * @param {number} idxMS 
@@ -287,6 +300,14 @@ const app = new Vue({
       this.selectedMatiereIndex = idxMS;
       // this.originalSelectedItem = new MatiereSection(this.mat_sect.mat_sec[idxNS][idxMS]);
       this.selectedItem = this.mat_sect.mat_sec[idxNS][idxMS];
+    },
+    onDeleteMatiere: function(idxDupItem) {
+      if (confirm("Voulez vous supprimer cet élément ?")) {
+        this.dupItems.splice(idxDupItem, 1);
+      }
+    },
+    onAddMatiere: function () {
+      this.dupItems.push(new MatiereSection());
     },
     /**
      * Remplit certains champs non touchés dans le formulaire :
@@ -320,6 +341,11 @@ const app = new Vue({
     onCancelClicked: function () {
       this.mode = 'list';
       this.selectedItem = {};
+    },
+    onSaveDupClicked: function() {},
+    onCancelDupClicked: function() {
+      this.mode = 'list';
+      this.dupItems = [];
     }
   }
 });
