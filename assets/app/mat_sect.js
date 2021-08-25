@@ -5,6 +5,7 @@ const app = new Vue({
     matieres: [],
     sections: [],
     mat_sect: new MatiereSectionCollection(),
+    idxNiveau: -1,
     selectedItem: {},
     selectedItemIndex: {},
     selectedNiveauIndex: 0,
@@ -53,7 +54,7 @@ const app = new Vue({
     addAlertMessage: function(type, msg) {
       const idx = this.alerts.length;
       this.alerts.push({alType: type, alMsg: msg});
-      setTimeout(()=> this.clearAlertMessage(0), 5000);
+      setTimeout(()=> this.clearAlertMessage(0), 3000);
     },
     /**
      * Efface le message d'alerte d'indice indiqué
@@ -195,6 +196,7 @@ const app = new Vue({
           }
           this.addAlertMessage('success', 'Ajout effectué avec succès!');
           this.mat_sect.add(newItem);
+          this.idxNiveau = this.mat_sect.findNiveau(newItem);
           this.onCancelClicked();
         });
     },
@@ -226,6 +228,13 @@ const app = new Vue({
         return true;
       }
       return false;
+    },
+    /**
+     * Sélectionner un niveau
+     * @param {Event} event 
+     */
+    onSelectNiveau: function (event) {
+      this.idxNiveau = event.target.value;
     },
     /**
      * Click sur un élément en vue de le modifier.

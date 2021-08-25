@@ -67,6 +67,10 @@ class MatiereSectionCollection {
       .findIndex(ns => ns.isEqualTo(item));
   }
 
+  findNiveau(item) {
+    return this.indexOfNiveau(new NiveauSection(item));
+  }
+
   /**
    * Ajouter un seul élément
    * @param {MatiereSection} item 
