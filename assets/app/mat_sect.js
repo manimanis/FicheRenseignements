@@ -15,7 +15,6 @@ const app = new Vue({
     mode: 'list'
   },
   mounted: function () {
-    this.fetchClasses();
     this.fetchMatieresSections();
   },
   methods: {
@@ -63,16 +62,6 @@ const app = new Vue({
      */
     clearAlertMessage: function (idx) {
       this.alerts.splice(idx, 1);
-    },
-    fetchClasses: function () {
-      return fetch('operations.php?cnt=classes')
-        .then(response => response.json())
-        .then(this.handleFetch)
-        .then(data => {
-          if (data.status == 'ok') {
-            this.classes = data.data.classes;
-          }
-        });
     },
     /**
      * 

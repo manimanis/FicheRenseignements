@@ -12,7 +12,6 @@ class ViewElevesClasses extends ViewBase {
         'date_naiss', 
         'genre', 
         'email', 
-        'passe_temps', 
         'section', 
         'section_court', 
         'classe'
@@ -28,8 +27,7 @@ class ViewElevesClasses extends ViewBase {
             'nom_prenom' => 'nom_prenom',
             'date_naiss' => 'date_naiss',
             'genre' => 'genre',
-            'email' => 'email',
-            'passe_temps' => 'passe_temps'
+            'email' => 'email'
         ],
         'classes' => [
             'id_classe' => 'id',

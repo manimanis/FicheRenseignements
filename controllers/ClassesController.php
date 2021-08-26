@@ -1,14 +1,6 @@
 <?php
 class ClassesController extends ControllerBase
 {
-    public function indexAction()
-    {
-        $view_classes = new ViewClasses();
-        $classes = $view_classes->fetch_many();
-        $this->_response->addData('classes', $classes);
-        $this->_response->write();
-    }
-
     public function matieresSectionsAction()
     {
         $vwMatSec = new ViewMatieresSections();

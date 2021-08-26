@@ -8,101 +8,158 @@
   <title>Fiche de renseignements Elève</title>
   <link rel="stylesheet" href="assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+  <style>
+    .garcon {
+      background-color: #C599FF;
+    }
+
+    .fille {
+      background-color: #F6C6FA;
+    }
+
+    #vueapp h1 {
+      text-align: center;
+      margin: 1em 0 3em;
+    }
+
+    #vueapp h3 {
+      margin: 0.75em 0 0.25em;
+    }
+
+    .garcon {
+      color: #090014;
+    }
+
+    .fille {
+      color: #2E1024;
+    }
+  </style>
 </head>
 
 <body>
   <main id="vueapp" class="container">
-    <h1>Fiche de renseignements</h1>
+    <div class="my-4 card" v-bind:class="{'garcon':fiche.genre=='G','fille':fiche.genre=='F'}">
+      <div class="card-body">
+        <h1><i class="fas fa-address-card"></i> Fiche de renseignements</h1>
 
-    <form>
-      <h3>Informations Personnelles</h3>
-      <div class="my-1">
-        <label for="inpNomPrenom">Nom & Prénom</label>
-        <input type="text" id="inpNomPrenom" class="form-control" name="nom_prenom" required>
+        <form>
+          <p class="text-end">Année Scolaire: {{fiche.annee_scolaire}}/{{fiche.annee_scolaire+1}}</p>
+          <h3><i class="fas fa-id-card"></i> Informations Personnelles</h3>
+
+          <div class="my-1 row">
+            <div class="col-sm-6">
+              <div><label>Genre</label></div>
+              <label>
+                <input type="radio" id="inpGenreGarcon" name="genre" value="G" v-model="fiche.genre">
+                <i class="fas fa-male"></i> Garçon
+              </label>
+              <label>
+                <input type="radio" id="inpGenreFille" name="genre" value="F" v-model="fiche.genre">
+                <i class="fas fa-female"></i> Fille
+              </label>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="inpDateNaiss"><i class="fas fa-calendar-alt"></i> Date de Naissance</label>
+              <input type="date" id="inpDateNaiss" class="form-control" name="date_naiss" v-model="fiche.date_naiss"
+                required>
+            </div>
+          </div>
+
+          <div class="my-1">
+            <label for="inpNomPrenom"><i class="fas fa-user"></i> Nom & Prénom</label>
+            <input type="text" id="inpNomPrenom" class="form-control" name="nom_prenom" v-model="fiche.nom_prenom"
+              required>
+          </div>
+
+          <div class="my-1">
+            <label for="inpEmail"><i class="fas fa-at"></i> Email</label>
+            <input type="email" id="inpEmail" class="form-control" name="email" v-model="fiche.email">
+            <div class="form-text">De préférence compte Gmail.</div>
+          </div>
+
+          <div class="my-1">
+            <label for="inpAdresse"><i class="fas fa-map-marker-alt"></i> Adresse Postale</label>
+            <input type="text" id="inpAdresse" class="form-control" name="adresse"
+              v-model="fiche.other_infos.getByTitreInfo('Adresse Postale').info" required>
+            <div class="form-text">Indiquer uniquement la ville et la région, exemple : Hammam Sousse Rahba</div>
+          </div>
+
+          <div class="my-1">
+            <label for="inpPasseTemps"><i class="fas fa-gamepad"></i> Passe temps</label>
+            <textarea type="text" id="inpPasseTemps" class="form-control" name="passe_temps"
+              v-model="fiche.other_infos.getByTitreInfo('Passe Temps').info" required></textarea>
+            <div class="form-text">Ce que vous aimez faire lorsque vous êtes libre.</div>
+          </div>
+
+          <div class="my-1">
+            <label for="inpQualites"><i class="fas fa-smile-beam"></i> Qualités</label>
+            <textarea type="text" id="inpQualites" class="form-control" name="qualites"
+              v-model="fiche.other_infos.getByTitreInfo('Qualités').info"></textarea>
+            <div class="form-text">Les cotés positifs de votre personnalité.</div>
+          </div>
+
+          <div class="my-1">
+            <label for="inpQualites"><i class="fas fa-frown"></i> Défauts</label>
+            <textarea type="text" id="inpDefauts" class="form-control" name="defauts"
+              v-model="fiche.other_infos.getByTitreInfo('Défauts').info"></textarea>
+            <div class="form-text">Les cotés négatifs de votre personnalité.</div>
+          </div>
+
+          <h3><i class="fas fa-user-graduate"></i> Informations Scolaires</h3>
+
+          <div class="my-1">
+            <label for="inpClasse"><i class="fas fa-school"></i> Classe</label>
+            <select name="classe" id="inpClasse" class="form-control"
+              v-model="fiche.other_infos.getByTitreInfo('Classe').info" required>
+              <option>-</option>
+              <option v-for="classe in classes">{{classe.classe}}</option>
+            </select>
+            <div class="form-text">Indiquer votre classe actuelle.</div>
+          </div>
+
+          <div class="my-1">
+            <label for="inpClasseAnneeDerniere"><i class="fas fa-school"></i> Classe de l'année dernière</label>
+            <input type="text" id="inpClasseAnneeDerniere" class="form-control" name="classe_derniere"
+              v-model="fiche.other_infos.getByTitreInfo('Classe de l\'année dernière').info" required>
+            <div class="form-text">Indiquer votre classe de l'année dernière.</div>
+          </div>
+
+          <div class="my-1 row">
+            <div class="col-sm-3">
+              <label for="inpMoyenneAnnuelle">Moyenne Annuelle</label>
+              <input type="number" min="0" max="20" step="0.01" id="inpMoyenneAnnuelle" class="form-control"
+                name="moy_derniere" v-model="fiche.other_infos.getByTitreInfo('Moyenne Annuelle').info" required>
+            </div>
+
+            <div class="col-sm-3">
+              <label for="inpNoteFr">Note Français</label>
+              <input type="number" min="0" max="20" step="0.25" id="inpNoteFr" class="form-control" name="note_fr"
+                v-model="fiche.other_infos.getByTitreInfo('Note Français').info">
+            </div>
+
+            <div class="col-sm-3">
+              <label for="inpNoteMa">Note Mathématiques</label>
+              <input type="number" min="0" max="20" step="0.01" id="inpNoteMa" class="form-control" name="note_ma"
+                v-model="fiche.other_infos.getByTitreInfo('Note Mathématiques').info">
+            </div>
+
+            <div class="col-sm-3">
+              <label for="inpNoteInfo">Note Informatique</label>
+              <input type="number" min="0" max="20" step="0.01" id="inpNoteInfo" class="form-control" name="note_info"
+                v-model="fiche.other_infos.getByTitreInfo('Note Informatique').info" required>
+            </div>
+
+            <div class="form-text">Indiquer vos notes/moyennes de l'année dernière.</div>
+          </div>
+
+          <div class="my-2">
+            <button class="btn btn-primary" v-on:click.prevent="onSubmit()"><i class="fas fa-paper-plane"></i>
+              Soumettre</button>
+          </div>
+        </form>
       </div>
-
-      <div class="my-1 row">
-        <div class="col-sm-6">
-          <div><label>Genre</label></div>
-          <label>
-            <input type="radio" id="inpGenreGarcon" name="genre" value="G">
-            Garçon
-          </label>
-          <label>
-            <input type="radio" id="inpGenreFille" name="genre" value="F">
-            Fille
-          </label>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="inpDateNaiss">Date de Naissance</label>
-          <input type="date" id="inpDateNaiss" class="form-control" name="date_naiss" required>
-        </div>
-      </div>
-
-      <div class="my-1">
-        <label for="inpEmail">Email</label>
-        <input type="email" id="inpEmail" class="form-control" name="email" required>
-        <div class="form-text">De préférence compte Gmail.</div>
-      </div>
-
-      <div class="my-1">
-        <label for="inpAdresse">Adresse Postale</label>
-        <input type="text" id="inpAdresse" class="form-control" name="adresse" required>
-        <div class="form-text">Indiquer uniquement la ville et la région, exemple : Hammam Sousse Rahba</div>
-      </div>
-
-      <div class="my-1">
-        <label for="inpPasseTemps">Passe temps</label>
-        <textarea type="text" id="inpPasseTemps" class="form-control" name="passe_temps" required></textarea>
-        <div class="form-text">Ce que vous aimez faire lorsque vous êtes libre.</div>
-      </div>
-
-      <div class="my-1">
-        <label for="inpQualites">Qualités</label>
-        <textarea type="text" id="inpQualites" class="form-control" name="qualites"></textarea>
-        <div class="form-text">Les cotés positifs de votre personnalité.</div>
-      </div>
-
-      <div class="my-1">
-        <label for="inpQualites">Défauts</label>
-        <textarea type="text" id="inpDefauts" class="form-control" name="defauts"></textarea>
-        <div class="form-text">Les cotés négatifs de votre personnalité.</div>
-      </div>
-
-      <h3>Informations Scolaires</h3>
-
-      <div class="my-1">
-        <label for="inpClasseAnneeDerniere">Classe de l'année dernière</label>
-        <input type="text" id="inpClasseAnneeDerniere" class="form-control" name="classe_derniere" required>
-        <div class="form-text">Indiquer votre classe de l'année dernière.</div>
-      </div>
-
-      <div class="my-1 row">
-        <div class="col-sm-3">
-          <label for="inpMoyenneAnnuelle">Moyenne Annuelle</label>
-          <input type="number" min="0" max="20" step="0.01" id="inpMoyenneAnnuelle" class="form-control" name="moy_derniere" required>
-        </div>
-  
-        <div class="col-sm-3">
-          <label for="inpNoteFr">Note Français</label>
-          <input type="number" min="0" max="20" step="0.25" id="inpNoteFr" class="form-control" name="note_fr">
-        </div>
-  
-        <div class="col-sm-3">
-          <label for="inpNoteMa">Note Mathématiques</label>
-          <input type="number" min="0" max="20" step="0.01" id="inpNoteMa" class="form-control" name="note_ma">
-        </div>
-  
-        <div class="col-sm-3">
-          <label for="inpNoteInfo">Note Informatique</label>
-          <input type="number" min="0" max="20" step="0.01" id="inpNoteInfo" class="form-control" name="note_info" required>
-        </div>
-
-        <div class="form-text">Indiquer vos notes/moyennes de l'année dernière.</div>
-      </div>
-      
-    </form>
+    </div>
   </main>
   <script src="assets/js/bootstrap.bundle.js"></script>
   <script src="assets/js/vue.js"></script>

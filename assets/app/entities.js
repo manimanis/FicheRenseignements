@@ -1,3 +1,30 @@
+/**
+ * Return :
+ * - 1  if str1 > str2
+ * - -1 if str1 < str2
+ * - 0  if str1 == str2 
+ * @param {string} str1 
+ * @param {string} str2 
+ */
+function stringCompare(str1, str2) {
+  if (str1 > str2) return 1;
+  if (str1 < str2) return -1;
+  return 0;
+}
+
+/**
+ * 
+ * @param {Date} dt1 
+ * @param {Date} dt2 
+ * @returns 
+ */
+function dateCompare(dt1, dt2) {
+  return dt1.getTime() - dt2.getTime();
+}
+
+/**
+ * 
+ */
 class Matiere {
   constructor(obj = {}) {
     this.id = +obj.id || 0;
@@ -5,6 +32,9 @@ class Matiere {
   }
 }
 
+/**
+ * 
+ */
 class Section {
   constructor(obj = {}) {
     this.id = +obj.id || 0;
@@ -13,6 +43,9 @@ class Section {
   }
 }
 
+/**
+ * 
+ */
 class MatiereSection {
   constructor(obj = {}) {
     this.id_section = +obj.id_section || 0;
@@ -34,6 +67,9 @@ class MatiereSection {
   }
 }
 
+/**
+ * 
+ */
 class NiveauSection {
   constructor(obj = {}) {
     this.niveau = +obj.niveau;
@@ -50,6 +86,9 @@ class NiveauSection {
   }
 }
 
+/**
+ * 
+ */
 class MatiereSectionCollection {
   constructor(items = []) {
     this.mat_sec = [];
@@ -140,5 +179,129 @@ class MatiereSectionCollection {
       }
       this.removeAt(idxNS, idxMS);
     }
+  }
+}
+
+/**
+ * Une information élève
+ */
+class InfoEleve {
+  constructor(obj = {}) {
+    this.id = +obj.id || 0;
+    this.id_eleve = +obj.id_eleve || 0;
+    this.titre_info = obj.titre_info || "";
+    this.date_ins = (obj.date_ins != null ? new Date(obj.date_ins) : new Date()).toISOString().substr(0, 19).replace('T', ' ');
+    this.info = obj.info || "";
+  }
+
+  isEqualTo(other) {
+    return this.id_eleve == other.id_eleve &&
+      this.titre_info == other.titre_info &&
+      this.info == other.info;
+  }
+
+  compareTo(other) {
+    let cmp = stringCompare(this.titre_info, other.titre_info);
+    if (cmp != 0) {
+      return cmp;
+    }
+    cmp = dateCompare(this.date_ins, other.date_ins);
+    if (cmp != 0) {
+      return cmp;
+    }
+    return stringCompare(this.info, other.info);
+  }
+}
+
+class InfoEleveCollection {
+  constructor(items=[]) {
+    this.infos_eleves = [];
+    this.addMany(items);
+  }
+
+  /**
+   * Ajouter une information élève
+   * 
+   * @param {InfoEleve} item 
+   */
+  add(item) {
+    this.infos_eleves.push(item);
+    return this;
+  }
+
+  /**
+   * Ajouter plusieurs InfoEleve
+   * 
+   * @param {InfoEleve[]} items 
+   * @returns 
+   */
+  addMany(items) {
+    for (let item of items) {
+      this.add(item);
+    }
+    return this;
+  }
+
+  /**
+   * Retourne tous les objects InfoEleve[]
+   * @returns 
+   */
+  getAll() {
+    return this.infos_eleves;
+  }
+
+  get(index) {
+    return this.infos_eleves[index];
+  }
+
+  createIfNotExists(titre_info, info="") {
+    const idx = this.indexOfTitreInfo(titre_info);
+    if (idx == -1) {
+      this.add(new InfoEleve({
+        titre_info: titre_info,
+        date_ins: new Date().toISOString()
+      }));
+    }
+    return this;
+  }
+
+  indexOfTitreInfo(titre_info) {
+    return this.infos_eleves.findIndex(ie => ie.titre_info == titre_info);
+  }
+
+  /**
+   * Retourne tous les enregistrements pour un titre info ti donné
+   * @param {string} ti
+   * @returns {InfoEleve[]}
+   */
+  getByTitreInfo(ti) {
+    const idx = this.indexOfTitreInfo(ti);
+    if (idx == -1) {
+      return null;
+    }
+    return this.infos_eleves[idx];
+  }
+}
+
+/**
+ * 
+ */
+class FicheRenseignement {
+  constructor(obj = {}) {
+    this.id_eleve = +obj.id_eleve || 0;
+    this.nom_prenom	= obj.nom_prenom || "";
+    this.date_naiss = ((obj.date_naiss != null) ? new Date(obj.date_naiss) : new Date()).toISOString().substr(0, 10);
+    this.genre = obj.genre || (["G", "F"][Math.floor(Math.random() * 2)]);
+    this.email = obj.email || "";
+    this.annee_scolaire = +obj.annee_scolaire || this.currentAnneeScolaire();
+    this.other_infos = new InfoEleveCollection(obj.other_infos || []);
+  }
+
+  currentAnneeScolaire() {
+    const dt = new Date();
+    if ((dt.getMonth() + 1) < 9) {
+      return dt.getFullYear() - 1;
+    }
+    return dt.getFullYear();
   }
 }

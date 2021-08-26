@@ -13,6 +13,8 @@ require_once 'inc/TableSections.php';
 require_once 'inc/TableMatieres.php';
 require_once 'inc/TableMatieresSections.php';
 require_once 'inc/TableElevesClasses.php';
+require_once 'inc/TableInfoEleve.php';
+require_once 'inc/TableFicheRenseignement.php';
 
 require_once 'inc/ViewBase.php';
 require_once 'inc/ViewClasses.php';
