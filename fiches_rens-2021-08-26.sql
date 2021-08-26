@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 26, 2021 at 06:49 AM
+-- Generation Time: Aug 26, 2021 at 06:20 PM
 -- Server version: 8.0.20
 -- PHP Version: 7.4.6
 
@@ -82,17 +82,16 @@ CREATE TABLE `eleves` (
   `nom_prenom` varchar(128) NOT NULL,
   `date_naiss` date NOT NULL,
   `genre` varchar(1) NOT NULL,
-  `email` varchar(128) NOT NULL,
-  `passe_temps` text NOT NULL
+  `email` varchar(128) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `eleves`
 --
 
-INSERT INTO `eleves` (`id`, `nom_prenom`, `date_naiss`, `genre`, `email`, `passe_temps`) VALUES
-(1, 'Abdou MANI', '2012-09-08', 'G', '', 'Jeux Vidéos'),
-(2, 'Mohamed Anis MANI', '1975-06-28', 'G', 'manimohamed@gmail.com', 'Programmation');
+INSERT INTO `eleves` (`id`, `nom_prenom`, `date_naiss`, `genre`, `email`) VALUES
+(1, 'Abdou MANI', '2012-09-08', 'G', ''),
+(2, 'Mohamed Anis MANI', '1975-06-28', 'G', 'manimohamed@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -132,10 +131,38 @@ CREATE TABLE `eleves_classes_view` (
 ,`niveau` int
 ,`nom_prenom` varchar(128)
 ,`order` int
-,`passe_temps` text
 ,`section` varchar(128)
 ,`section_court` varchar(64)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fiches_renseignements`
+--
+
+CREATE TABLE `fiches_renseignements` (
+  `id` int NOT NULL,
+  `id_eleve` int NOT NULL,
+  `id_classe` int NOT NULL,
+  `annee_scolaire` int NOT NULL,
+  `date_remp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `remote_host` varchar(128) COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `infos_eleves`
+--
+
+CREATE TABLE `infos_eleves` (
+  `id` int NOT NULL,
+  `id_eleve` int NOT NULL,
+  `titre_info` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `date_ins` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `info` text COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -442,7 +469,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `eleves_classes_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `eleves_classes_view`  AS  select `ec`.`id_eleve` AS `id_eleve`,`ec`.`id_classe` AS `id_classe`,`cl`.`id_section` AS `id_section`,`ec`.`annee_scolaire` AS `annee_scolaire`,`cl`.`niveau` AS `niveau`,`cl`.`order` AS `order`,`el`.`nom_prenom` AS `nom_prenom`,`el`.`date_naiss` AS `date_naiss`,`el`.`genre` AS `genre`,`el`.`email` AS `email`,`el`.`passe_temps` AS `passe_temps`,`se`.`section` AS `section`,`se`.`section_court` AS `section_court`,concat(`cl`.`niveau`,`se`.`section_court`,`cl`.`order`) AS `classe` from (((`eleves_classes` `ec` join `classes` `cl` on((`ec`.`id_classe` = `cl`.`id`))) join `eleves` `el` on((`ec`.`id_eleve` = `el`.`id`))) join `sections` `se` on((`cl`.`id_section` = `se`.`id`))) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `eleves_classes_view`  AS  select `ec`.`id_eleve` AS `id_eleve`,`ec`.`id_classe` AS `id_classe`,`cl`.`id_section` AS `id_section`,`ec`.`annee_scolaire` AS `annee_scolaire`,`cl`.`niveau` AS `niveau`,`cl`.`order` AS `order`,`el`.`nom_prenom` AS `nom_prenom`,`el`.`date_naiss` AS `date_naiss`,`el`.`genre` AS `genre`,`el`.`email` AS `email`,`se`.`section` AS `section`,`se`.`section_court` AS `section_court`,concat(`cl`.`niveau`,`se`.`section_court`,`cl`.`order`) AS `classe` from (((`eleves_classes` `ec` join `classes` `cl` on((`ec`.`id_classe` = `cl`.`id`))) join `eleves` `el` on((`ec`.`id_eleve` = `el`.`id`))) join `sections` `se` on((`cl`.`id_section` = `se`.`id`))) ;
 
 -- --------------------------------------------------------
 
@@ -480,6 +507,18 @@ ALTER TABLE `eleves`
 --
 ALTER TABLE `eleves_classes`
   ADD PRIMARY KEY (`id_eleve`,`id_classe`,`annee_scolaire`);
+
+--
+-- Indexes for table `fiches_renseignements`
+--
+ALTER TABLE `fiches_renseignements`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `infos_eleves`
+--
+ALTER TABLE `infos_eleves`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `matieres`
@@ -520,6 +559,18 @@ ALTER TABLE `classes`
 --
 ALTER TABLE `eleves`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `fiches_renseignements`
+--
+ALTER TABLE `fiches_renseignements`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `infos_eleves`
+--
+ALTER TABLE `infos_eleves`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `matieres`
