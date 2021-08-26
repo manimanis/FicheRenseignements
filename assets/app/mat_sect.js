@@ -132,6 +132,22 @@ const app = new Vue({
         .catch(this.handleErrors);
     },
     /**
+     * Insérer plusieurs MatiereSection
+     * @param {MatiereSection[]} arr 
+     */
+    insertManyMatieres: function (arr) {
+      let formData = new URLSearchParams();
+      arr.forEach(ms => Object.entries(ms).forEach(arr => formData.append(arr[0]+'[]', arr[1])));
+      return fetch('operations.php?cnt=classes&act=insertManyMatieres',
+        {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(this.handleFetch)
+        .catch(this.handleErrors);
+    },
+    /**
      * Mettre à jour une MatiereSection
      * @param {MatiereSection} oms Ancienne matière
      * @param {MatiereSection} ms Nouvelle matière
@@ -189,7 +205,6 @@ const app = new Vue({
      */
     insertMatiereSection: function () {
       const newItem = this.selectedItem;
-      this.errors = [];
       this.insertMatiere(newItem)
         .then(data => {
           if (data == null) {
@@ -199,6 +214,21 @@ const app = new Vue({
           this.mat_sect.add(newItem);
           this.idxNiveau = this.mat_sect.findNiveau(newItem);
           this.onCancelClicked();
+        });
+    },
+    /**
+     * Insérer plusieurs matières section dans la base de données
+     */
+    insertMatiereSectionMany: function() {
+      this.insertManyMatieres(this.dupItems)
+        .then(data => {
+          if (data == null) {
+            return;
+          }
+          this.addAlertMessage('success', 'Ajout effectué avec succès!');
+          this.mat_sect.addMany(this.dupItems);
+          this.idxNiveau = this.mat_sect.findNiveau(this.dupItems[0]);
+          this.onCancelDupClicked();
         });
     },
     /**
@@ -313,20 +343,37 @@ const app = new Vue({
      * Remplit certains champs non touchés dans le formulaire :
      * - section, section_court
      * - matiere
+     * 
+     * @param {MatiereSection}
      */
-    fillMissingFields: function () {
-      const section = this.sections.find(sect => this.selectedItem.id_section == sect.id);
-      this.selectedItem.section = section.section;
-      this.selectedItem.section_court = section.section_court;
+    fillMissingFields: function (item) {
+      const section = this.sections.find(sect => item.id_section == sect.id);
+      item.section = section.section;
+      item.section_court = section.section_court;
 
-      const matiere = this.matieres.find(mat => this.selectedItem.id_matiere == mat.id);
-      this.selectedItem.matiere = matiere.matiere;
+      const matiere = this.matieres.find(mat => item.id_matiere == mat.id);
+      item.matiere = matiere.matiere;
+    },
+    /**
+     * Remplit certains champs non touchés dans le formulaire :
+     * - section, section_court
+     * - matiere
+     * 
+     * @param {MatiereSection[]} arr 
+     */
+    fillMissingFieldsArray: function (arr, model) {
+      for (let item of arr) {
+        Object.entries(model).forEach(entry => {
+          item[entry[0]] = entry[1];
+        });
+        this.fillMissingFields(item);
+      }
     },
     /**
      * Click sur le bouton Enregistrer
      */
     onSaveClicked: function () {
-      this.fillMissingFields();
+      this.fillMissingFields(this.selectedItem);
       if (this.mode == 'edit') {
         this.updateMatiereSection();
       } else if (this.mode == 'new') {
@@ -342,7 +389,20 @@ const app = new Vue({
       this.mode = 'list';
       this.selectedItem = {};
     },
-    onSaveDupClicked: function() {},
+    /**
+     * CLICK sur le bouton enregistrer
+     */
+    onSaveDupClicked: function() {
+      this.fillMissingFieldsArray(this.dupItems, {
+        niveau: this.dupItems[0].niveau,
+        id_section: this.dupItems[0].id_section
+      });
+      if (this.mat_sect.findNiveau(this.dupItems[0]) != -1) {
+        this.addAlertMessage('danger', 'Cette section existe déjà!');
+        return;
+      }
+      this.insertMatiereSectionMany();
+    },
     onCancelDupClicked: function() {
       this.mode = 'list';
       this.dupItems = [];

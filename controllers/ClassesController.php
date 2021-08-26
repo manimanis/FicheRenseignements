@@ -56,6 +56,37 @@ class ClassesController extends ControllerBase
         $this->_response->write();
     }
 
+    public function insertManyMatieresAction() {
+        if (!$this->_controller->isPOST()) {
+            $this->_response->addError("Opération non supportée!");
+            $this->_response->write();
+            return;
+        }
+        $req = $this->_controller->getRequest();
+        $tblMatSect = new TableMatieresSections();
+        $count = count($req['id_section']);
+        for ($i = 0; $i < $count; $i++) {
+            $data = [
+                'id_section' => $req['id_section'][$i],
+                'id_matiere' => $req['id_matiere'][$i],
+                'niveau' => $req['niveau'][$i],
+                'categorie' => $req['categorie'][$i],
+                'coef' => $req['coef'][$i]
+            ];
+            if ($tblMatSect->insert($data) === true) {
+                $ms = $tblMatSect->query_by_id([
+                    $data['id_section'],
+                    $data['id_matiere'],
+                    $data['niveau']
+                ]);
+                $this->_response->addData('matiere_section'.$i, $ms);
+            } else {
+                $this->_response->addErrors($tblMatSect->getErrors()->getAll());
+            }
+        }
+        $this->_response->write();
+    }
+
     public function updateMatiereAction()
     {
         if (!$this->_controller->isPOST()) {

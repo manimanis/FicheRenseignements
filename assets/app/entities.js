@@ -67,6 +67,11 @@ class MatiereSectionCollection {
       .findIndex(ns => ns.isEqualTo(item));
   }
 
+  /**
+   * Recherche l'indice d'un niveau
+   * @param {MatiereSection} item 
+   * @returns 
+   */
   findNiveau(item) {
     return this.indexOfNiveau(new NiveauSection(item));
   }

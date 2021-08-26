@@ -203,7 +203,7 @@
               </div>
               <div class="my-1 col-2 col-sm-1 col-lg-1">
                 <a href="#" v-on:click.prevent="onDeleteMatiere(idxItem)" title="Supprimer"><i
-                  class="fas fa-trash-alt"></i></a>
+                  class="fas fa-trash-alt" v-if="dupItems.length > 1"></i></a>
               </div>
             </div>
 
