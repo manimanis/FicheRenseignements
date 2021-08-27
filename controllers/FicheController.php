@@ -41,7 +41,8 @@ class FicheController extends ControllerBase {
                 ];
                 $fiche_id = $tblFiche->insert($fiche_data);
                 if ($fiche_id !== false) {
-                    $this->_response->addData('id_fiche', $fiche_id);
+                    $fiche_data['id'] = $fiche_id;
+                    $this->_response->addData('fiche', $fiche_data);
                 }
 
                 $tblEleveClasse = new TableElevesClasses();

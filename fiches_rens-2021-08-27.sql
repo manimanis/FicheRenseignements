@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `binomes` (
   `id_eleve` int NOT NULL,
   `id_binome` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -44,7 +44,7 @@ CREATE TABLE `classes` (
   `niveau` int NOT NULL,
   `id_section` int NOT NULL,
   `order` int NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `classes`
@@ -83,7 +83,7 @@ CREATE TABLE `eleves` (
   `date_naiss` date NOT NULL,
   `genre` varchar(1) NOT NULL,
   `email` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `eleves`
@@ -104,7 +104,7 @@ CREATE TABLE `eleves_classes` (
   `id_eleve` int NOT NULL,
   `id_classe` int NOT NULL,
   `annee_scolaire` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `eleves_classes`
@@ -198,7 +198,7 @@ INSERT INTO `infos_eleves` (`id`, `id_eleve`, `titre_info`, `date_ins`, `info`) 
 CREATE TABLE `matieres` (
   `id` int NOT NULL,
   `matiere` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `matieres`
@@ -244,7 +244,7 @@ CREATE TABLE `matieres_sections` (
   `niveau` int NOT NULL,
   `categorie` varchar(2) NOT NULL,
   `coef` double NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `matieres_sections`
@@ -447,7 +447,7 @@ CREATE TABLE `presences` (
   `id_eleve` int NOT NULL,
   `date_seance` datetime NOT NULL,
   `remarques` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -459,7 +459,7 @@ CREATE TABLE `sections` (
   `id` int NOT NULL,
   `section` varchar(128) NOT NULL,
   `section_court` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `sections`

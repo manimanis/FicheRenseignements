@@ -1,24 +1,22 @@
 const app = new Vue({
   el: "#vueapp",
   data: {
-    fiche: new FicheRenseignement(),
+    fiche: new FicheRenseignement()
+      .createInfo('Adresse Postale')
+      .createInfo('Passe Temps')
+      .createInfo('Qualités')
+      .createInfo('Défauts')
+      .createInfo('Classe de l\'année dernière')
+      .createInfo('Classe')
+      .createInfo("Moyenne Annuelle")
+      .createInfo("Note Français")
+      .createInfo("Note Informatique")
+      .createInfo("Note Mathématiques"),
     alerts: [],
     classes: [],
     minDateNaiss: '',
-    maxDateNaiss: ''
-  },
-  created: function () {
-    this.fiche.other_infos
-      .createIfNotExists('Adresse Postale')
-      .createIfNotExists('Passe Temps')
-      .createIfNotExists('Qualités')
-      .createIfNotExists('Défauts')
-      .createIfNotExists('Classe de l\'année dernière')
-      .createIfNotExists('Classe', '4EXP1')
-      .createIfNotExists("Moyenne Annuelle")
-      .createIfNotExists("Note Français")
-      .createIfNotExists("Note Informatique")
-      .createIfNotExists("Note Mathématiques");
+    maxDateNaiss: '',
+    savedFiches: []
   },
   mounted: function () {
     this.defaultValues();
@@ -26,29 +24,62 @@ const app = new Vue({
   },
   methods: {
     defaultValues: function () {
-      const dt = new Date();
-      const minYear = dt.getFullYear() - 25;
-      const maxYear = dt.getFullYear() - 14;
-      this.minDateNaiss = minYear + '-01-01';
-      this.maxDateNaiss = maxYear + '-01-01';
+      this.loadFromLocalStorage();
+      if (this.savedFiches.length == 0) {
+        const dt = new Date();
+        const minYear = dt.getFullYear() - 25;
+        const maxYear = dt.getFullYear() - 14;
+        this.minDateNaiss = minYear + '-01-01';
+        this.maxDateNaiss = maxYear + '-01-01';
 
-      this.fiche.other_infos
-        .setInfo('Adresse Postale', 'Route de la plage - Hammam-Sousse')
-        .setInfo('Passe Temps', 'Programmation')
-        .setInfo('Qualités', 'Aucune')
-        .setInfo('Défauts', 'Beaucoup')
-        .setInfo('Classe de l\'année dernière', '3EXP1')
-        .setInfo('Classe', '4EXP1')
-        .setInfo("Moyenne Annuelle", '13.20')
-        .setInfo("Note Français", '12')
-        .setInfo("Note Informatique", '18.5')
-        .setInfo("Note Mathématiques", '14');
-      
-      this.fiche.nom_prenom = 'nom prénom';
-      this.fiche.date_naiss = `${randomInt(minYear, maxYear)}-${('0' + randomInt(1, 12)).substr(0, 2)}-${('0' + randomInt(1, 28)).substr(0, 2)}`;
-      this.fiche.genre = ["G", "F"][randomInt(0, 1)];
-      this.fiche.email = "mmmm@yahoo.fr";
+        this.fiche.other_infos
+          .setInfo('Adresse Postale', 'Route de la plage - Hammam-Sousse')
+          .setInfo('Passe Temps', 'Programmation')
+          .setInfo('Qualités', 'Aucune')
+          .setInfo('Défauts', 'Beaucoup')
+          .setInfo('Classe de l\'année dernière', '3EXP1')
+          .setInfo('Classe', '4EXP1')
+          .setInfo("Moyenne Annuelle", '13.20')
+          .setInfo("Note Français", '12')
+          .setInfo("Note Informatique", '18.5')
+          .setInfo("Note Mathématiques", '14');
+
+        this.fiche.nom_prenom = 'nom prénom';
+        this.fiche.date_naiss = `${randomInt(minYear, maxYear)}-${('0' + randomInt(1, 12)).substr(0, 2)}-${('0' + randomInt(1, 28)).substr(0, 2)}`;
+        this.fiche.genre = ["G", "F"][randomInt(0, 1)];
+        this.fiche.email = "mmmm@yahoo.fr";
+      } else {
+        this.fiche = new FicheRenseignement(this.savedFiches[this.savedFiches.length - 1]);
+      }
     },
+    /**
+     * Charger les fiches à partir de localStorage
+     * @returns 
+     */
+    loadFromLocalStorage: function () {
+      const lsData = localStorage.getItem(document.location.pathname);
+      if (lsData == null) {
+        return null;
+      }
+      this.savedFiches = JSON.parse(lsData);
+    },
+    /**
+     * Enregistrer les fiches dans localStorage
+     */
+    saveToLocalStorage: function () {
+      localStorage.setItem(document.location.pathname, JSON.stringify(this.savedFiches));
+    },
+    /**
+     * Ajouter la fiche de renseignement (fiche) à la liste des fiches déjà existantes
+     * @param {FicheRenseignement} fiche 
+     */
+    addToSavedFiches: function (fiche) {
+      this.savedFiches.push(fiche);
+    },
+    /**
+     * Charger la liste des classes pour une annee_scolaire donnée
+     * @returns 
+     */
     fetchClasses: function () {
       return fetch(`operations.php?cnt=fiche&act=listeClasses&annee_scolaire=${this.fiche.annee_scolaire}`)
         .then(response => response.json())
@@ -73,9 +104,11 @@ const app = new Vue({
         // .catch(this.handleErrors)
         .then(data => {
           if (data == null) {
-            return
+            return;
           }
           console.log(data);
+          this.addToSavedFiches(this.fiche);
+          this.saveToLocalStorage();
         });
     },
     /**
@@ -140,7 +173,7 @@ const app = new Vue({
       formData.append('id_classe', this.fiche.classe.id_classe);
       return formData;
     },
-    fillMissingValues: function() {
+    fillMissingValues: function () {
       const selectedClasse = this.fiche.other_infos.getInfo('Classe');
       this.fiche.classe = this.classes.find(cl => cl.classe == selectedClasse);
     },

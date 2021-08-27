@@ -329,7 +329,11 @@ class FicheRenseignement {
     this.email = obj.email || "";
     this.annee_scolaire = +obj.annee_scolaire || this.currentAnneeScolaire();
     this.classe = new Classe(obj.classe);
-    this.other_infos = new InfoEleveCollection(obj.other_infos || []);
+    if (obj.other_infos) {
+      this.other_infos = new InfoEleveCollection(obj.other_infos.infos_eleves.map(oi => new InfoEleve(oi)));
+    } else {
+      this.other_infos = new InfoEleveCollection([]);
+    }
   }
 
   currentAnneeScolaire() {
@@ -338,5 +342,10 @@ class FicheRenseignement {
       return dt.getFullYear() - 1;
     }
     return dt.getFullYear();
+  }
+
+  createInfo(titre_info, info = "") {
+    this.other_infos.createIfNotExists(titre_info, info);
+    return this;
   }
 }
