@@ -322,6 +322,7 @@ class InfoEleveCollection {
  */
 class FicheRenseignement {
   constructor(obj = {}) {
+    this.id = +obj.id || 0;
     this.id_eleve = +obj.id_eleve || 0;
     this.nom_prenom = obj.nom_prenom || "";
     this.date_naiss = ((obj.date_naiss != null) ? new Date(obj.date_naiss) : new Date()).toISOString().substr(0, 10);
@@ -347,5 +348,9 @@ class FicheRenseignement {
   createInfo(titre_info, info = "") {
     this.other_infos.createIfNotExists(titre_info, info);
     return this;
+  }
+
+  getInfoEleve(titre_info) {
+    return this.other_infos.getByTitreInfo(titre_info);
   }
 }

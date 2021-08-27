@@ -106,7 +106,15 @@ const app = new Vue({
           if (data == null) {
             return;
           }
-          console.log(data);
+          const thisObj = this;
+          this.fiche.id = +data.data.fiche.id;
+          this.fiche.id_eleve = +data.data.fiche.id_eleve;
+          Object.entries(data.data.info_eleve).forEach(arr => {
+            const lie = this.fiche.getInfoEleve(arr[0]);
+            lie.id = +arr[1];
+            lie.id_eleve = thisObj.fiche.id_eleve;
+          });
+          
           this.addToSavedFiches(this.fiche);
           this.saveToLocalStorage();
         });
