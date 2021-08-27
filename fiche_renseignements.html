@@ -42,7 +42,7 @@
       <div class="card-body">
         <h1><i class="fas fa-address-card"></i> Fiche de renseignements</h1>
 
-        <form>
+        <form id="fiche">
           <p class="text-end">Année Scolaire: {{fiche.annee_scolaire}}/{{fiche.annee_scolaire+1}}</p>
           <h3><i class="fas fa-id-card"></i> Informations Personnelles</h3>
 
@@ -62,7 +62,8 @@
             <div class="col-sm-6">
               <label for="inpDateNaiss"><i class="fas fa-calendar-alt"></i> Date de Naissance</label>
               <input type="date" id="inpDateNaiss" class="form-control" name="date_naiss" v-model="fiche.date_naiss"
-                required>
+                v-bind:min="minDateNaiss" v-bind:max="maxDateNaiss" required>
+              <div class="invalid-feedback">Indiquer une date correcte, votre age doit être compris entre 15 et 25 ans.</div>
             </div>
           </div>
 
@@ -70,6 +71,7 @@
             <label for="inpNomPrenom"><i class="fas fa-user"></i> Nom & Prénom</label>
             <input type="text" id="inpNomPrenom" class="form-control" name="nom_prenom" v-model="fiche.nom_prenom"
               required>
+            <div class="invalid-feedback">Indiquer votre nom & prénom.</div>
           </div>
 
           <div class="my-1">
@@ -82,21 +84,20 @@
             <label for="inpAdresse"><i class="fas fa-map-marker-alt"></i> Adresse Postale</label>
             <input type="text" id="inpAdresse" class="form-control" name="adresse"
               v-model="fiche.other_infos.getByTitreInfo('Adresse Postale').info" required>
-            <div class="form-text">Indiquer uniquement la ville et la région, exemple : Hammam Sousse Rahba</div>
+            <div class="invalid-feedback">Indiquer votre adresse postale, uniquement la ville et la région, exemple : Hammam Sousse Rahba.</div>
           </div>
 
           <div class="my-1">
             <label for="inpPasseTemps"><i class="fas fa-gamepad"></i> Passe temps</label>
             <textarea type="text" id="inpPasseTemps" class="form-control" name="passe_temps"
               v-model="fiche.other_infos.getByTitreInfo('Passe Temps').info" required></textarea>
-            <div class="form-text">Ce que vous aimez faire lorsque vous êtes libre.</div>
+            <div class="invalid-feedback">Indiquer votre passe temps.</div>
           </div>
 
           <div class="my-1">
             <label for="inpQualites"><i class="fas fa-smile-beam"></i> Qualités</label>
             <textarea type="text" id="inpQualites" class="form-control" name="qualites"
               v-model="fiche.other_infos.getByTitreInfo('Qualités').info"></textarea>
-            <div class="form-text">Les cotés positifs de votre personnalité.</div>
           </div>
 
           <div class="my-1">
@@ -115,42 +116,42 @@
               <option>-</option>
               <option v-for="classe in classes">{{classe.classe}}</option>
             </select>
-            <div class="form-text">Indiquer votre classe actuelle.</div>
+            <div class="invalid-feedback">Indiquer votre classe.</div>
           </div>
 
           <div class="my-1">
             <label for="inpClasseAnneeDerniere"><i class="fas fa-school"></i> Classe de l'année dernière</label>
             <input type="text" id="inpClasseAnneeDerniere" class="form-control" name="classe_derniere"
               v-model="fiche.other_infos.getByTitreInfo('Classe de l\'année dernière').info" required>
-            <div class="form-text">Indiquer votre classe de l'année dernière.</div>
+            <div class="invalid-feedback">Indiquer votre classe de l'année dernière.</div>
           </div>
 
           <div class="my-1 row">
-            <div class="col-sm-3">
+            <div class="col-sm-6 col-lg-3">
               <label for="inpMoyenneAnnuelle">Moyenne Annuelle</label>
               <input type="number" min="0" max="20" step="0.01" id="inpMoyenneAnnuelle" class="form-control"
                 name="moy_derniere" v-model="fiche.other_infos.getByTitreInfo('Moyenne Annuelle').info" required>
+              <div class="invalid-feedback">Indiquer votre moyenne annuelle.</div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-6 col-lg-3">
               <label for="inpNoteFr">Note Français</label>
               <input type="number" min="0" max="20" step="0.25" id="inpNoteFr" class="form-control" name="note_fr"
                 v-model="fiche.other_infos.getByTitreInfo('Note Français').info">
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-6 col-lg-3">
               <label for="inpNoteMa">Note Mathématiques</label>
               <input type="number" min="0" max="20" step="0.01" id="inpNoteMa" class="form-control" name="note_ma"
                 v-model="fiche.other_infos.getByTitreInfo('Note Mathématiques').info">
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-6 col-lg-3">
               <label for="inpNoteInfo">Note Informatique</label>
               <input type="number" min="0" max="20" step="0.01" id="inpNoteInfo" class="form-control" name="note_info"
                 v-model="fiche.other_infos.getByTitreInfo('Note Informatique').info" required>
+              <div class="invalid-feedback">Indiquer votre moyenne en informatique.</div>
             </div>
-
-            <div class="form-text">Indiquer vos notes/moyennes de l'année dernière.</div>
           </div>
 
           <div class="my-2">

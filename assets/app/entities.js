@@ -22,6 +22,10 @@ function dateCompare(dt1, dt2) {
   return dt1.getTime() - dt2.getTime();
 }
 
+function randomInt(a, b) {
+  return a + Math.floor(Math.random() * (b - a + 1));
+}
+
 /**
  * 
  */
@@ -83,6 +87,19 @@ class NiveauSection {
   toString() {
     return this.niveau + ((this.niveau == 1) ? 'ère' : 'ème') + ' ' +
       this.section;
+  }
+}
+
+class Classe {
+  constructor(obj = {}) {
+    this.id_classe = +obj.id_classe || 0;
+    this.id_section = +obj.id_section || 0;
+    this.annee_scolaire = +obj.annee_scolaire || 2020;
+    this.classe = obj.classe || "";
+    this.niveau = +obj.niveau || 1;
+    this.order = +obj.order || 1;
+    this.section = obj.section || "";
+    this.section_court = obj.section_court || "";
   }
 }
 
@@ -214,7 +231,7 @@ class InfoEleve {
 }
 
 class InfoEleveCollection {
-  constructor(items=[]) {
+  constructor(items = []) {
     this.infos_eleves = [];
     this.addMany(items);
   }
@@ -254,12 +271,13 @@ class InfoEleveCollection {
     return this.infos_eleves[index];
   }
 
-  createIfNotExists(titre_info, info="") {
+  createIfNotExists(titre_info, info = "") {
     const idx = this.indexOfTitreInfo(titre_info);
     if (idx == -1) {
       this.add(new InfoEleve({
         titre_info: titre_info,
-        date_ins: new Date().toISOString()
+        date_ins: new Date().toISOString(),
+        info: info
       }));
     }
     return this;
@@ -281,6 +299,22 @@ class InfoEleveCollection {
     }
     return this.infos_eleves[idx];
   }
+
+  setInfo(titre_info, info) {
+    const ie = this.getByTitreInfo(titre_info);
+    if (ie != null) {
+      ie.info = info;
+    }
+    return this;
+  }
+
+  getInfo(titre_info) {
+    const ie = this.getByTitreInfo(titre_info);
+    if (ie != null) {
+      return ie.info;
+    }
+    return null;
+  }
 }
 
 /**
@@ -289,11 +323,12 @@ class InfoEleveCollection {
 class FicheRenseignement {
   constructor(obj = {}) {
     this.id_eleve = +obj.id_eleve || 0;
-    this.nom_prenom	= obj.nom_prenom || "";
+    this.nom_prenom = obj.nom_prenom || "";
     this.date_naiss = ((obj.date_naiss != null) ? new Date(obj.date_naiss) : new Date()).toISOString().substr(0, 10);
-    this.genre = obj.genre || (["G", "F"][Math.floor(Math.random() * 2)]);
+    this.genre = obj.genre || "";
     this.email = obj.email || "";
     this.annee_scolaire = +obj.annee_scolaire || this.currentAnneeScolaire();
+    this.classe = new Classe(obj.classe);
     this.other_infos = new InfoEleveCollection(obj.other_infos || []);
   }
 
