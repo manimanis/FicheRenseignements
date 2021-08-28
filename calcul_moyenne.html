@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcul Moyenne</title>
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+</head>
+
+<body>
+  <main class="container" id="vueapp">
+    <h1>Calcul de Moyenne</h1>
+
+    <article>
+      <div class="my-2">
+        <label for="inpNiveauIndex">Niveau</label>
+        <select class="form-select form-select-md" id="inpNiveauIndex" aria-labelledby="inpNiveauIndexHelp"
+          v-on:change="onSelectNiveau($event)">
+          <option value="-1">-</option>
+          <option v-for="niveau, index in mat_sect.niv_sec" v-bind:value="index" v-bind:selected="idxNiveau == index">
+            {{niveau}}</option>
+        </select>
+        <div id="inpNiveauIndexHelp" class="form-text">Sélectionner un niveau pour voir ses matières.</div>
+      </div>
+    </article>
+
+    <article v-if="idxNiveau != -1">
+      <div v-for="ms, idxMS in mat_sect.mat_sec[idxNiveau]" class="my-1 row">
+        <div class="col-5 col-md-8">{{ms.matiere}}</div>
+        <div class="col-1 col-md-1 text-end">{{ms.coef}}</div>
+        <div class="col-4 col-md-2"><input type="number" min="0" max="20" step="0.01" class="form-control form-control-sm text-end" v-model.number="notes[idxMS]"></div>
+        <div class="col-2 col-md-1 text-end">{{(notes[idxMS] * ms.coef).toFixed(2)}}</div>
+      </div>
+      <div class="my-1 row">
+        <div class="col-8 col-md-10">Somme</div>
+        <div class="col-4 col-md-2 text-end">{{total}}</div>
+      </div>
+    </article>
+
+  </main>
+  <script src="assets/js/bootstrap.bundle.js"></script>
+  <script src="assets/js/vue.js"></script>
+  <script src="assets/app/entities.js"></script>
+  <script src="assets/app/calc_moy.js"></script>
+</body>
+
+</html>
