@@ -1,5 +1,6 @@
 <?php
-class FicheController extends ControllerBase {
+class FicheController extends ControllerBase
+{
     public function listeClassesAction()
     {
         $view_classes = new ViewClasses();
@@ -12,7 +13,8 @@ class FicheController extends ControllerBase {
         $this->_response->write();
     }
 
-    public function insertNewAction() {
+    public function insertNewAction()
+    {
         if (!$this->_controller->isPOST()) {
             $this->_response->addError("Opération non supportée!");
             $this->_response->write();
@@ -76,8 +78,62 @@ class FicheController extends ControllerBase {
                 $this->_response->addErrors($tblEleve->getErrors()->getAll());
             }
         }
-        
+
         // $this->_response->addData('request', $req);
+        $this->_response->write();
+    }
+
+    public function updateAction()
+    {
+        if (!$this->_controller->isPOST()) {
+            $this->_response->addError("Opération non supportée!");
+            $this->_response->write();
+            return;
+        }
+        $req = $this->_controller->getRequest();
+        $tblEleve = new TableEleves();
+        $eleve_data = [
+            'nom_prenom' => $req['nom_prenom'],
+            'date_naiss' => $req['date_naiss'],
+            'genre' => $req['genre'],
+            'email' => $req['email'],
+            'id_eleve' => intval($req['id_eleve'])
+        ];
+        $tblEleve->update($eleve_data, "id = :id_eleve");
+
+        $tblFiche = new TableFicheRenseignement();
+        $fiche_data = [
+            'id_fiche' => intval($req['id']),
+            'id_eleve' => $eleve_data['id_eleve'],
+            'id_classe' => intval($req["id_classe"]),
+            'annee_scolaire' => intval($req["annee_scolaire"]),
+            'date_remp' => date('Y-m-d H:i:s'),
+            'remote_host' => $this->_controller->getRemote()
+        ];
+        $tblFiche->update($fiche_data, "id = :id_fiche");
+
+
+        $tblInfoEleve = new TableInfoEleve();
+        $n = count($req['oi_id']);
+        for ($i = 0; $i < $n; $i++) {
+            $info_eleve = [
+                'id_eleve' => $eleve_data['id_eleve'],
+                'titre_info' => $req['oi_titre_info'][$i],
+                'date_ins' => $req['oi_date_ins'][$i],
+                'info' => $req['oi_info'][$i],
+                'id_info' => intval($req['oi_id'][$i])
+            ];
+            $tblInfoEleve->update($info_eleve, "id = :id_info");
+        }
+
+        $tblEleveClasse = new TableElevesClasses();
+        $el_cl_data = [
+            'id_eleve' => $fiche_data['id_eleve'],
+            'id_classe' => $fiche_data['id_classe'],
+            'annee_scolaire' => $fiche_data['annee_scolaire']
+        ];
+        $tblEleveClasse->update($el_cl_data, 'id_eleve = :id_eleve AND annee_scolaire = :annee_scolaire');
+
         $this->_response->write();
     }
 }

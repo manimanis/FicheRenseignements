@@ -25,30 +25,13 @@ const app = new Vue({
   methods: {
     defaultValues: function () {
       this.loadFromLocalStorage();
-      if (this.savedFiches.length == 0) {
-        const dt = new Date();
-        const minYear = dt.getFullYear() - 25;
-        const maxYear = dt.getFullYear() - 14;
-        this.minDateNaiss = minYear + '-01-01';
-        this.maxDateNaiss = maxYear + '-01-01';
+      const dt = new Date();
+      const minYear = dt.getFullYear() - 25;
+      const maxYear = dt.getFullYear() - 14;
+      this.minDateNaiss = minYear + '-01-01';
+      this.maxDateNaiss = maxYear + '-01-01';
 
-        this.fiche.other_infos
-          .setInfo('Adresse Postale', 'Route de la plage - Hammam-Sousse')
-          .setInfo('Passe Temps', 'Programmation')
-          .setInfo('Qualités', 'Aucune')
-          .setInfo('Défauts', 'Beaucoup')
-          .setInfo('Classe de l\'année dernière', '3EXP1')
-          .setInfo('Classe', '4EXP1')
-          .setInfo("Moyenne Annuelle", '13.20')
-          .setInfo("Note Français", '12')
-          .setInfo("Note Informatique", '18.5')
-          .setInfo("Note Mathématiques", '14');
-
-        this.fiche.nom_prenom = 'nom prénom';
-        this.fiche.date_naiss = `${randomInt(minYear, maxYear)}-${('0' + randomInt(1, 12)).substr(0, 2)}-${('0' + randomInt(1, 28)).substr(0, 2)}`;
-        this.fiche.genre = ["G", "F"][randomInt(0, 1)];
-        this.fiche.email = "mmmm@yahoo.fr";
-      } else {
+      if (this.savedFiches.length != 0) {
         this.fiche = new FicheRenseignement(this.savedFiches[this.savedFiches.length - 1]);
       }
     },
@@ -75,6 +58,10 @@ const app = new Vue({
      */
     addToSavedFiches: function (fiche) {
       this.savedFiches.push(fiche);
+    },
+    updateInSavedFiches: function (fiche) {
+      const idx = this.savedFiches.findIndex(sf => sf.id == fiche.id);
+      this.savedFiches[idx] = fiche;
     },
     /**
      * Charger la liste des classes pour une annee_scolaire donnée
@@ -114,8 +101,25 @@ const app = new Vue({
             lie.id = +arr[1];
             lie.id_eleve = thisObj.fiche.id_eleve;
           });
-          
+
           this.addToSavedFiches(this.fiche);
+          this.saveToLocalStorage();
+        });
+    },
+    updateFicheRenseignements: function (fiche) {
+      const formData = this.serializeFicheRenseignements(fiche);
+      return fetch(`operations.php?cnt=fiche&act=update&annee_scolaire=${this.fiche.annee_scolaire}`, {
+        method: "POST",
+        body: formData
+      })
+        .then(response => response.json())
+        .then(this.handleFetch)
+        // .catch(this.handleErrors)
+        .then(data => {
+          if (data == null) {
+            return;
+          }
+          this.updateInSavedFiches(this.fiche);
           this.saveToLocalStorage();
         });
     },
@@ -162,6 +166,10 @@ const app = new Vue({
       form.classList.add('was-validated');
       return isValid;
     },
+    resetForm: function () {
+      const form = document.querySelector('#fiche');
+      form.classList.remove('was-validated');
+    },
     /**
      * Return an URL formatted data for the object values
      * @param {FicheRenseignement} fiche 
@@ -191,8 +199,38 @@ const app = new Vue({
     onSubmit: function () {
       this.fillMissingValues();
       if (this.validateForm()) {
-        this.insertFicheRenseignements(this.fiche);
+        if (this.fiche.id == 0) {
+          this.insertFicheRenseignements(this.fiche);
+        } else {
+          this.updateFicheRenseignements(this.fiche);
+        }
       }
+    },
+    onSelectFiche: function (idxFiche) {
+      this.fiche = new FicheRenseignement(this.savedFiches[idxFiche]);
+    },
+    onCreateFiche: function () {
+      this.resetForm();
+      this.fiche = new FicheRenseignement()
+        .createInfo('Adresse Postale')
+        .createInfo('Passe Temps')
+        .createInfo('Qualités')
+        .createInfo('Défauts')
+        .createInfo('Classe de l\'année dernière')
+        .createInfo('Classe')
+        .createInfo("Moyenne Annuelle")
+        .createInfo("Note Français")
+        .createInfo("Note Informatique")
+        .createInfo("Note Mathématiques");
+    },
+    onClearFiches: function () {
+      if (!confirm("Voulez-vous vraiment supprimer l'historique de ce PC ?")) {
+        return;
+      }
+      
+      this.savedFiches = [];
+      this.saveToLocalStorage();
+      this.onCreateFiche();
     }
   }
 });
