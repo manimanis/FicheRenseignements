@@ -1,5 +1,7 @@
 <?php
 
+require_once 'config.inc.php';
+
 require_once 'inc/ErrorCollection.php';
 
 require_once 'inc/DbConn.php';
