@@ -24,10 +24,15 @@ class JWTUtils
             'jti'  => base64_encode(random_bytes(16)),
             'iss'  => SERVER_NAME,
             'nbf'  => $issuedAt->getTimestamp(),
-            'exp'  => $expireAt->getTimestamp(),                      // Expire
+            'exp'  => $expireAt->getTimestamp(),
             'data' => $payload
         ];
         return JWT::encode($data, SECRET_KEY, 'HS512');
+    }
+
+    public function getPayload($token) {
+        JWT::$leeway += 60;
+        return JWT::decode((string)$token, SECRET_KEY, ['HS512']);
     }
 
     public function extractToken()
@@ -50,13 +55,12 @@ class JWTUtils
             return false;
         }
 
-        JWT::$leeway += 60;
-        $this->_token = JWT::decode((string)$jwt, SECRET_KEY, ['HS512']);
+        $this->_token = $this->getPayload($jwt);
         $now = new DateTimeImmutable();
         if (
             $this->_token->iss !== SERVER_NAME ||
             $this->_token->nbf > $now->getTimestamp() ||
-            $this->exp < $now->getTimestamp()
+            $this->_token->exp < $now->getTimestamp()
         ) {
             $this->_headerError = 'HTTP/1.1 401 Unauthorized';
             $this->_reason = "Token expired or incorrect server name";

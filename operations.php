@@ -6,6 +6,8 @@ use Firebase\JWT\JWT;
 
 require_once 'vendor/autoload.php';
 
+require_once 'inc/JWTUtils.php';
+
 require_once 'config.inc.php';
 
 require_once 'inc/ErrorCollection.php';
@@ -34,5 +36,17 @@ require_once 'inc/Response.php';
 require_once 'inc/Controller.php';
 require_once 'inc/ControllerBase.php';
 
+$jwt = new JWTUtils();
+$startTime = new DateTimeImmutable();
+$endTime = $startTime->modify('+60 minutes');
+$token = $jwt->createToken(
+    ['user' => 'anis'],
+    $startTime,
+    $endTime
+);
+
+print_r($token);
+
+echo $jwt->getPayload((string)$token);
 
 Controller::getInstance()->run();
