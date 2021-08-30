@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
   <style>
-    #liste_matieres > .row:nth-of-type(2n) {
+    #liste_matieres>.row:nth-of-type(2n) {
       background-color: var(--bs-gray-200);
     }
   </style>
@@ -17,7 +17,7 @@
 
 <body>
   <main class="container" id="vueapp">
-    <h1>Calcul de Moyenne Générale Trimestre</h1>
+    <h1>Moyenne Générale Trimestre</h1>
 
     <article>
       <div class="my-2">
@@ -36,40 +36,42 @@
       <div class="py-1 row">
         <div class="col-6 col-md-8">&nbsp;</div>
         <div class="col-3 col-md-2">
-          <button class="w-100 btn btn-dark" title="Modifier les coefficients" v-if="editMode != 'coef'" v-on:click="onSelectEditMode('coef')"><i class="fas fa-pencil-alt"></i> Coef</button>
+          <button class="w-100 btn btn-dark" title="Modifier les coefficients" v-if="editMode != 'coef'"
+            v-on:click="onSelectEditMode('coef')"><i class="fas fa-pencil-alt"></i> Coef</button>
         </div>
         <div class="col-3 col-md-2">
-          <button class="w-100 btn btn-dark" title="Modifier les notes" v-if="editMode != 'note'" v-on:click="onSelectEditMode('note')"><i class="fas fa-pencil-alt"></i> Note</button>
+          <button class="w-100 btn btn-dark" title="Modifier les notes" v-if="editMode != 'note'"
+            v-on:click="onSelectEditMode('note')"><i class="fas fa-pencil-alt"></i> Note</button>
         </div>
       </div>
       <div v-for="ms, idxMS in mat_sect.mat_sec[idxNiveau]" class="py-1 row">
         <div class="col-6 col-md-8">{{ms.matiere}}</div>
         <div class="col-3 col-md-2">
           <div v-if="editMode != 'coef'" class="text-end">{{ms.coef}}</div>
-          <input type="number" min="0" max="20" step="0.25" class="form-control form-control-sm text-end" v-if="editMode == 'coef'" v-on:blur="onBlurCoef(idxMS)" v-model.number="ms.coef">
+          <input type="number" min="0" max="20" step="0.25" class="form-control form-control-sm text-end"
+            v-if="editMode == 'coef'" v-on:blur="onBlurCoef(idxMS)" v-model.number="ms.coef">
         </div>
         <div class="col-3 col-md-2">
           <div v-if="editMode != 'note'" class="text-end">{{notes[idxMS]}}</div>
-          <input type="number" min="0" max="20" step="0.25" class="form-control form-control-sm text-end" v-if="editMode == 'note'" v-on:blur="onBlurNote(idxMS)" v-model.number="notes[idxMS]">
+          <input type="number" min="0" max="20" step="0.25" class="form-control form-control-sm text-end"
+            v-if="editMode == 'note'" v-on:blur="onBlurNote(idxMS)" v-model.number="notes[idxMS]">
+        </div>
+      </div>
+      <div class="my-2 row">
+        <div class="col-4 text-center">
+          <div class="text-muted">Total</div>
+          <div>{{total}}</div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="text-muted">Somme Coefs</div>
+          <div>{{totalCoef}}</div>
+        </div>
+        <div class="col-4 text-center">
+          <div class="text-muted">Moyenne</div>
+          <div>{{totalMoy.toFixed(2)}}</div>
         </div>
       </div>
     </article>
-
-    <article class="my-2 row">
-      <div class="col-4 text-center">
-        <div class="text-muted">Total</div>
-        <div>{{total}}</div>
-      </div>
-      <div class="col-4 text-center">
-        <div class="text-muted">Somme Coefs</div>
-        <div>{{totalCoef}}</div>
-      </div>
-      <div class="col-4 text-center">
-        <div class="text-muted">Moyenne</div>
-        <div>{{totalMoy.toFixed(2)}}</div>
-      </div>
-    </article>
-
   </main>
   <script src="assets/js/bootstrap.bundle.js"></script>
   <script src="assets/js/vue.js"></script>
