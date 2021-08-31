@@ -36,17 +36,15 @@ require_once 'inc/Response.php';
 require_once 'inc/Controller.php';
 require_once 'inc/ControllerBase.php';
 
-$jwt = new JWTUtils();
-$startTime = new DateTimeImmutable();
-$endTime = $startTime->modify('+60 minutes');
-$token = $jwt->createToken(
-    ['user' => 'anis'],
-    $startTime,
-    $endTime
-);
+// $jwt = new JWTUtils();
+// $startTime = new DateTimeImmutable();
+// $endTime = $startTime->modify('+60 minutes');
+// $token = $jwt->createToken(
+//     ['user' => 'anis']
+// );
 
-print_r($token);
+// print_r($token);
 
-echo $jwt->getPayload((string)$token);
+// print_r($jwt->getPayload((string)$token));
 
 Controller::getInstance()->run();

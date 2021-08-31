@@ -3,11 +3,11 @@ class Controller
 {
     private static ?Controller $controller = null;
 
-    private string $_remote;
-    private string $_method;
-    private array $_request = [];
-    private string $_controllerName = '';
-    private string $_actionName = '';
+    protected string $_remote;
+    protected string $_method;
+    protected array $_request = [];
+    protected string $_controllerName = '';
+    protected string $_actionName = '';
 
     private function __construct() {
         $this->_method = strtoupper($_SERVER['REQUEST_METHOD']);
@@ -51,6 +51,8 @@ class Controller
     function getActionName() {
         return $this->_actionName;
     }
+
+
 
     function run() {
         $classname = ucfirst($this->_controllerName) . 'Controller';

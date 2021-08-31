@@ -17,8 +17,17 @@ class JWTUtils
         $this->_reason = '';
     }
 
-    public function createToken(array $payload, DateTimeImmutable $issuedAt, DateTimeImmutable $expireAt)
-    {
+    public function createToken(
+        array $payload,
+        DateTimeImmutable $issuedAt=null,
+        DateTimeImmutable $expireAt=null
+    ) {
+        if ($issuedAt == null) {
+            $issuedAt = new DateTimeImmutable();
+        }
+        if ($expireAt == null) {
+            $expireAt = $issuedAt->modify('+60 minutes');
+        }
         $data = [
             'iat'  => $issuedAt->getTimestamp(),
             'jti'  => base64_encode(random_bytes(16)),
@@ -30,7 +39,8 @@ class JWTUtils
         return JWT::encode($data, SECRET_KEY, 'HS512');
     }
 
-    public function getPayload($token) {
+    public function getPayload($token)
+    {
         JWT::$leeway += 60;
         return JWT::decode((string)$token, SECRET_KEY, ['HS512']);
     }
@@ -86,6 +96,9 @@ class JWTUtils
         return $this->_hasToken;
     }
 
+    /**
+     * @return stdObject
+     */
     public function getToken()
     {
         return $this->_token;
