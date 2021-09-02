@@ -27,6 +27,29 @@ function randomInt(a, b) {
 }
 
 /**
+ * Décoder la partie publique d'un JSON Web Token (JWT)
+ * @param {string} token 
+ * @returns object
+ */
+function parseJwt(token) {
+  var base64Url = token.split('.')[1];
+  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return new JWToken(JSON.parse(jsonPayload));
+}
+
+class JWToken {
+  constructor(wt = {}) {
+    this.startTime = new Date(wt.nbf * 1000);
+    this.endTime = new Date(wt.exp * 1000);
+    this.data = wt.data;
+  }
+}
+
+/**
  * 
  */
 class Matiere {
@@ -71,8 +94,18 @@ class MatiereSection {
   }
 }
 
+class Eleve {
+  constructor(obj = {}) {
+    this.id	= +obj.id || 0;
+    this.nom_prenom	= obj.nom_prenom || "";
+    this.date_naiss	= obj.date_naiss || new Date().toISOString().substr(0, 10);
+    this.genre = obj.genre || "G";
+    this.email = obj.email || "";
+  }
+}
+
 /**
- * 
+ * Classe NiveauSection
  */
 class NiveauSection {
   constructor(obj = {}) {
@@ -90,6 +123,9 @@ class NiveauSection {
   }
 }
 
+/**
+ * classe Classe
+ */
 class Classe {
   constructor(obj = {}) {
     this.id_classe = +obj.id_classe || 0;
@@ -318,7 +354,7 @@ class InfoEleveCollection {
 }
 
 /**
- * 
+ * Classe FicheRenseignement
  */
 class FicheRenseignement {
   constructor(obj = {}) {

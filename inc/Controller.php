@@ -52,8 +52,6 @@ class Controller
         return $this->_actionName;
     }
 
-
-
     function run() {
         $classname = ucfirst($this->_controllerName) . 'Controller';
         $methodname = $this->_actionName . 'Action';

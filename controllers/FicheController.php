@@ -9,15 +9,15 @@ class FicheController extends ControllerBase
         ], [
             'annee_scolaire' => $this->_controller->getRequest()['annee_scolaire']
         ]);
-        $this->_response->addData('classes', $classes);
-        $this->_response->write();
+        $this->addData('classes', $classes);
+        $this->write();
     }
 
     public function insertNewAction()
     {
         if (!$this->_controller->isPOST()) {
-            $this->_response->addError("Opération non supportée!");
-            $this->_response->write();
+            $this->addError("Opération non supportée!");
+            $this->write();
             return;
         }
         $tblEleve = new TableEleves();
@@ -31,7 +31,7 @@ class FicheController extends ControllerBase
             ];
             $id = $tblEleve->insert($eleve_data);
             if ($id !== false) {
-                $this->_response->addData('id_eleve', $id);
+                $this->addData('id_eleve', $id);
 
                 $tblFiche = new TableFicheRenseignement();
                 $fiche_data = [
@@ -44,7 +44,7 @@ class FicheController extends ControllerBase
                 $fiche_id = $tblFiche->insert($fiche_data);
                 if ($fiche_id !== false) {
                     $fiche_data['id'] = $fiche_id;
-                    $this->_response->addData('fiche', $fiche_data);
+                    $this->addData('fiche', $fiche_data);
                 }
 
                 $tblEleveClasse = new TableElevesClasses();
@@ -69,28 +69,28 @@ class FicheController extends ControllerBase
                     if ($ie_id !== false) {
                         $ie_ids[$info_eleve['titre_info']] = $ie_id;
                     } else {
-                        $this->_response->addErrors($tblInfoEleve->getErrors()->getAll());
+                        $this->addErrors($tblInfoEleve->getErrors()->getAll());
                     }
                 }
 
-                $this->_response->addData('info_eleve', $ie_ids);
+                $this->addData('info_eleve', $ie_ids);
             } else {
-                $this->_response->addErrors($tblEleve->getErrors()->getAll());
+                $this->addErrors($tblEleve->getErrors()->getAll());
             }
         }
 
-        // $this->_response->addData('request', $req);
-        $this->_response->write();
+        // $this->addData('request', $req);
+        $this->write();
     }
 
     public function updateAction()
     {
-        if (!$this->_controller->isPOST()) {
-            $this->_response->addError("Opération non supportée!");
-            $this->_response->write();
+        if (!$this->isPOST()) {
+            $this->addError("Opération non supportée!");
+            $this->write();
             return;
         }
-        $req = $this->_controller->getRequest();
+        $req = $this->getRequest();
         $tblEleve = new TableEleves();
         $eleve_data = [
             'nom_prenom' => $req['nom_prenom'],
@@ -134,6 +134,6 @@ class FicheController extends ControllerBase
         ];
         $tblEleveClasse->update($el_cl_data, 'id_eleve = :id_eleve AND annee_scolaire = :annee_scolaire');
 
-        $this->_response->write();
+        $this->write();
     }
 }

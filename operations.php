@@ -16,6 +16,8 @@ require_once 'inc/DbConn.php';
 
 require_once 'inc/DbBase.php';
 
+require_once 'inc/UtilString.php';
+
 require_once 'inc/TableBase.php';
 require_once 'inc/TableEleves.php';
 require_once 'inc/TableClasses.php';
@@ -25,6 +27,7 @@ require_once 'inc/TableMatieresSections.php';
 require_once 'inc/TableElevesClasses.php';
 require_once 'inc/TableInfoEleve.php';
 require_once 'inc/TableFicheRenseignement.php';
+require_once 'inc/TableUsers.php';
 
 require_once 'inc/ViewBase.php';
 require_once 'inc/ViewClasses.php';
